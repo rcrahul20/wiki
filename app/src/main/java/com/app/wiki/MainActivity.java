@@ -1,11 +1,19 @@
 package com.app.wiki;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.annotation.StyleRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
+
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -30,12 +38,26 @@ public class MainActivity extends AppCompatActivity implements MainActView
     private int pageIndex = 0;
     private LinearLayoutManager linearLayoutManager;
     private ProductsAdapter productsAdapter;
+    private static final String NIGHT_MODE = "night_mode";
 
+    private SharedPreferences mSharedPref;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        mSharedPref = getPreferences(Context.MODE_PRIVATE);
+        if (isNightModeEnabled()) {
+            setAppTheme(R.style.AppTheme_Base_Night);
+        } else {
+            setAppTheme(R.style.AppTheme_Base_Light);
+        }
+
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         mainActPresenter = new MainActPresenter(this);
 
@@ -57,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements MainActView
 
         products_arrayList = new ArrayList<>();
 
-        String ProductsUrl = ConstantData.service_URL ;
+        String ProductsUrl = ConstantData.service_URL1 ;
 
         getProductData(ProductsUrl);
 
@@ -84,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements MainActView
 
                         pageIndex++;
 
-                        String ProductsUrl = ConstantData.service_URL ;
+                        String ProductsUrl = ConstantData.service_URL1 ;
 
                         getProductData(ProductsUrl);
                     }
@@ -170,5 +192,54 @@ public class MainActivity extends AppCompatActivity implements MainActView
                 productsAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        // Inflate switch
+        Switch mSwitchNightMode = (Switch) menu.findItem(R.id.action_night_mode)
+                .getActionView().findViewById(R.id.item_switch);
+
+        // Get state from preferences
+        if (isNightModeEnabled()) {
+            mSwitchNightMode.setChecked(true);
+        } else {
+            mSwitchNightMode.setChecked(false);
+        }
+
+        mSwitchNightMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (isNightModeEnabled()) {
+                    setIsNightModeEnabled(false);
+                    setAppTheme(R.style.AppTheme_Base_Light);
+                } else {
+                    setIsNightModeEnabled(true);
+                    setAppTheme(R.style.AppTheme_Base_Night);
+                }
+
+                // Recreate activity
+                recreate();
+            }
+        });
+
+        return true;
+    }
+
+    private void setAppTheme(@StyleRes int style) {
+        setTheme(style);
+    }
+
+    private boolean isNightModeEnabled() {
+        return  mSharedPref.getBoolean(NIGHT_MODE, false);
+    }
+
+    private void setIsNightModeEnabled(boolean state) {
+        SharedPreferences.Editor mEditor = mSharedPref.edit();
+        mEditor.putBoolean(NIGHT_MODE, state);
+        mEditor.apply();
     }
 }

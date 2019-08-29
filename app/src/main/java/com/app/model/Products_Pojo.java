@@ -1,16 +1,21 @@
 package com.app.model;
 
 
-
+/**
+ *
+ */
 public class Products_Pojo
 {
-    private String title,desc,id;
+
+
+    private String title,desc,id,img;
 
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
+
         this.title = title;
     }
 
@@ -29,5 +34,14 @@ public class Products_Pojo
     public void setId(String id) {
         this.id = id;
     }
+    public Products_Pojo(String id1, String t1, String d1,String img1)    {
+        id=id1;
+        title=t1;
+        desc=d1;
+       img =img1;
+    }
 
+    public String getImage() {
+       return img;
+    }
 }

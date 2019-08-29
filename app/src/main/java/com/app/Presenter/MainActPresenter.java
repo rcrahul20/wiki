@@ -43,7 +43,7 @@ public class MainActPresenter
         try
         {
 
-            Products_Pojo products_pojo = new Products_Pojo();
+//            Products_Pojo products_pojo = new Products_Pojo();
             if (response.length() >= 1) {
                 if (pageIndex == 0) {
                     products_arrayList.clear();// --> Clear method is used to clear the ArrayList
@@ -59,15 +59,25 @@ public class MainActPresenter
                         String page_id = objPagesNo.getString("pageid");
                         int ns = objPagesNo.getInt("ns");
                         String title = objPagesNo.getString("title");
-                        String revisions = objPagesNo.getString("revisions");
-                        JSONArray ja = new JSONArray(revisions);
+                        String imageinfo = objPagesNo.getString("imageinfo");
+                        JSONArray ja = new JSONArray(imageinfo);
                         JSONObject jo1 = ja.getJSONObject(0);
+                        String url =jo1.getString("url");
+                        String ext = "["+jo1.getString("extmetadata")+"]";
+                        JSONArray ja_ext = new JSONArray(ext);
+                        JSONObject jo1_ext = ja_ext.getJSONObject(0);
+                        String cat = "["+jo1_ext.getString("Categories")+"]";
+                        JSONArray ja_cat = new JSONArray(cat);
+                        JSONObject jo1_cat = ja_cat.getJSONObject(0);
+                        String desc =jo1_cat.getString("value");
                         Log.d("rahul", "title : " + title + "pageid " + page_id);
-                        Log.d("rahul", "revisionsjson " + jo1.getString("*"));
-                        String desc =jo1.getString("*");
-                        products_pojo.setTitle(title);
-                        products_pojo.setDesc(desc);
-                        products_pojo.setId(page_id);
+//                        Log.d("rahul", "revisionsjson " + jo1.getString("*"));
+//                        products_pojo.setTitle(title);
+//                        products_pojo.setDesc("");
+//                        products_pojo.setId(page_id);
+                        products_arrayList.add(new Products_Pojo(page_id,title,desc,url));
+//                        products_arrayList.add(products_pojo);
+
                     }
 
 
@@ -77,8 +87,8 @@ public class MainActPresenter
                     e.printStackTrace();
                 }
 
-                products_arrayList.add(products_pojo);
                 mactView.updateData(products_arrayList);
+
             }
 
    }
